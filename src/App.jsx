@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const API = 'http://localhost:3000'
+const API = 'https://ne3-api-production.up.railway.app'
 
 function fmt(n) {
   return '$ ' + Math.round(n).toLocaleString('es-AR')
