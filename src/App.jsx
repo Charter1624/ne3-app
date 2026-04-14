@@ -48,8 +48,11 @@ export default function App() {
       const a    = document.createElement('a')
       a.href     = url
       a.download = 'propuesta_' + cliente.replace(/\s+/g,'_') + '.pptx'
+      a.style.display = 'none'
+      document.body.appendChild(a)
       a.click()
-      URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(url), 10000)
     } catch(e) {
       setError(e.message)
     } finally {
