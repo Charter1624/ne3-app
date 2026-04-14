@@ -27,7 +27,7 @@ export default function App() {
   const llTotal = ll ? llData.espU * llData.cantidad * llData.meses : 0
   const total   = fgTotal + lnTotal + llTotal
 
-  async function generarPDF() {
+  async function generarPPTX() {
     setLoading(true); setError(null)
     const body = {
       cliente, fecha_validez: fecha,
@@ -47,7 +47,7 @@ export default function App() {
       const url  = URL.createObjectURL(blob)
       const a    = document.createElement('a')
       a.href     = url
-      a.download = 'propuesta_' + cliente.replace(/\s+/g,'_') + '.pdf'
+      a.download = 'propuesta_' + cliente.replace(/\s+/g,'_') + '.pptx'
       a.click()
       URL.revokeObjectURL(url)
     } catch(e) {
@@ -165,11 +165,11 @@ export default function App() {
       )}
 
       <button
-        onClick={generarPDF}
+        onClick={generarPPTX}
         disabled={!canGenerate || loading}
         style={{ width:'100%', padding:'14px', background:btnBg, color:'white', border:'none', borderRadius:'12px', fontSize:'15px', fontWeight:'500', cursor: canGenerate && !loading ? 'pointer' : 'default' }}
       >
-        {loading ? 'Generando PDF...' : 'Descargar propuesta PDF'}
+        {loading ? 'Generando presentación...' : 'Descargar propuesta PowerPoint'}
       </button>
 
     </div>
