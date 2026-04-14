@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const PROPOSAL_API = import.meta.env.VITE_PROPOSAL_API_URL || 'http://localhost:8000'
+const PROPOSAL_API = import.meta.env.VITE_PROPOSAL_API_URL || 'https://ne3-proposal-api-production.up.railway.app'
 
 function fmt(n) {
   return '$ ' + Math.round(n).toLocaleString('es-AR')
@@ -21,6 +21,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState(null)
+  const [success, setSuccess] = useState(false)
 
   const fgTotal = fg ? fgData.prod * fgData.unidades + fgData.esp * fgData.unidades * fgData.meses : 0
   const lnTotal = ln ? lnData.prodU * lnData.cantidad + lnData.espU * lnData.cantidad * lnData.meses : 0
@@ -28,7 +29,7 @@ export default function App() {
   const total   = fgTotal + lnTotal + llTotal
 
   async function generarPPTX() {
-    setLoading(true); setError(null)
+    setLoading(true); setError(null); setSuccess(false)
     const body = {
       cliente, fecha_validez: fecha,
       ...(fg && { fullglass: { meses:fgData.meses, costo_produccion:fgData.prod*fgData.unidades, costo_mensual:fgData.esp*fgData.unidades }}),
@@ -36,34 +37,35 @@ export default function App() {
       ...(ll && { lunetas_led: { cantidad:llData.cantidad, meses:llData.meses, costo_mensual_unit:llData.espU }}),
     }
     try {
-      const res = await fetch(PROPOSAL_API+'/generate', {
-        method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
+      const res = await fetch(PROPOSAL_API + '/generate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
       })
       if (!res.ok) {
-        const err = await res.json().catch(()=>({detail:res.statusText}))
-        throw new Error(err.detail||'Error generando la propuesta')
+        const err = await res.json().catch(() => ({ detail: res.statusText }))
+        throw new Error(err.detail || 'Error generando la propuesta')
       }
       const blob = await res.blob()
       const url  = URL.createObjectURL(blob)
       const a    = document.createElement('a')
       a.href     = url
-      a.download = 'propuesta_' + cliente.replace(/\s+/g,'_') + '.pptx'
+      a.download = 'propuesta_' + cliente.replace(/\s+/g, '_') + '.pptx'
       a.style.display = 'none'
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       setTimeout(() => URL.revokeObjectURL(url), 10000)
-    } catch(e) {
+      setSuccess(true)
+    } catch (e) {
       setError(e.message)
     } finally {
       setLoading(false)
     }
   }
 
-  const inp   = { width:'100%', padding:'8px', borderRadius:'8px', border:'1px solid #ddd', fontSize:'14px', marginTop:'4px', boxSizing:'border-box' }
-  const card  = { background:'white', borderRadius:'16px', padding:'16px', marginBottom:'12px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)' }
-  const lbl   = { fontSize:'12px', color:'#666', display:'block', marginTop:'8px' }
-  const row2  = { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }
+  const inp  = { width:'100%', padding:'8px', borderRadius:'8px', border:'1px solid #ddd', fontSize:'14px', marginTop:'4px', boxSizing:'border-box' }
+  const card = { background:'white', borderRadius:'16px', padding:'16px', marginBottom:'12px', boxShadow:'0 1px 4px rgba(0,0,0,0.08)' }
+  const lbl  = { fontSize:'12px', color:'#666', display:'block', marginTop:'8px' }
+  const row2 = { display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }
   const canGenerate = cliente && total > 0
   const btnBg = loading ? '#a0d070' : canGenerate ? '#6CBB35' : '#ccc'
 
@@ -163,7 +165,13 @@ export default function App() {
 
       {error && (
         <div style={{ background:'#fff0f0', border:'1px solid #fcc', borderRadius:'12px', padding:'12px', marginBottom:'12px', fontSize:'13px', color:'#c00' }}>
-          ⚠️ {error}
+          Error: {error}
+        </div>
+      )}
+
+      {success && !error && (
+        <div style={{ background:'#f0f9e8', border:'1px solid #b2e08a', borderRadius:'12px', padding:'12px', marginBottom:'12px', fontSize:'13px', color:'#27500A' }}>
+          Presentacion descargada correctamente
         </div>
       )}
 
@@ -172,7 +180,7 @@ export default function App() {
         disabled={!canGenerate || loading}
         style={{ width:'100%', padding:'14px', background:btnBg, color:'white', border:'none', borderRadius:'12px', fontSize:'15px', fontWeight:'500', cursor: canGenerate && !loading ? 'pointer' : 'default' }}
       >
-        {loading ? 'Generando presentación...' : 'Descargar propuesta PowerPoint'}
+        {loading ? 'Generando presentacion...' : 'Descargar propuesta PowerPoint'}
       </button>
 
     </div>
