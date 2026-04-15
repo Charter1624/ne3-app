@@ -91,7 +91,7 @@ export default function App() {
 
     const bodyData = {
       cliente, mail, fecha_validez: fecha,
-      ...(fg && { fullglass:    { meses: fgData.meses, costo_produccion: fgData.prod * fgData.unidades, costo_mensual: fgData.esp * fgData.unidades } }),
+      ...(fg && { fullglass:    { unidades: fgData.unidades, meses: fgData.meses, costo_produccion: fgData.prod, costo_mensual: fgData.esp } }),
       ...(ln && { lunetas:      { cantidad: lnData.cantidad, meses: lnData.meses, costo_produccion_unit: lnData.prodU, costo_mensual_unit: lnData.espU } }),
       ...(ll && { lunetas_led:  { cantidad: llData.cantidad, meses: llData.meses, costo_mensual_unit: llData.espU } }),
     }
