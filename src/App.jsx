@@ -91,7 +91,7 @@ export default function App() {
 
     const bodyData = {
       cliente, mail, fecha_validez: fecha,
-      ...(fg && { fullglass:    { unidades: fgData.unidades, meses: fgData.meses, costo_produccion: fgData.prod, costo_mensual: fgData.esp } }),
+      ...(fg && { fullglass:    { unidades: fgData.unidades, linea: fgData.linea, meses: fgData.meses, costo_produccion: fgData.prod, costo_mensual: fgData.esp } }),
       ...(ln && { lunetas:      { cantidad: lnData.cantidad, meses: lnData.meses, costo_produccion_unit: lnData.prodU, costo_mensual_unit: lnData.espU } }),
       ...(ll && { lunetas_led:  { cantidad: llData.cantidad, meses: llData.meses, costo_mensual_unit: llData.espU } }),
     }
@@ -294,6 +294,24 @@ export default function App() {
           Propuesta descargada correctamente.
           {status.emailSent && <span> Copia enviada a <strong>{mail}</strong>.</span>}
           {!status.emailSent && mail && <span style={{ color: '#999' }}> (Email no configurado en el servidor)</span>}
+          <div style={{ marginTop: '10px' }}>
+            <button onClick={() => {
+              setCliente(''); setMail(''); setFecha('')
+              setFg(false); setLn(false); setLl(false)
+              setFgData({ linea:'29', unidades:1, meses:3, prod:850000, esp:1300000 })
+              setLnData({ cantidad:100, meses:3, prodU:55000, espU:74000, lineas:'21-26-33-44-46-60-76' })
+              setLlData({ cantidad:10, meses:3, espU:280000, lineas:'25(1)-44(2)-76(2)-99(2)-108(3)' })
+              setLogo(null); setLogoPreview(null)
+              if (logoRef.current) logoRef.current.value = ''
+              setStatus(null); setError(null)
+            }} style={{
+              background: `linear-gradient(135deg, ${G}, ${GD})`, color: 'white',
+              border: 'none', borderRadius: '8px', padding: '9px 18px',
+              fontSize: '13px', fontWeight: '600', cursor: 'pointer'
+            }}>
+              + Nueva propuesta
+            </button>
+          </div>
         </div>
       )}
 
