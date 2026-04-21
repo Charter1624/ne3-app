@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 
 const PROPOSAL_API = import.meta.env.VITE_PROPOSAL_API_URL || 'https://ne3-proposal-api-production.up.railway.app'
 const NE3_API      = import.meta.env.VITE_NE3_API_URL      || 'https://ne3-api-production.up.railway.app'
-const API_KEY      = import.meta.env.VITE_API_KEY          || ''
 
 function fmt(n) {
   return '$ ' + Math.round(n).toLocaleString('es-AR')
@@ -102,11 +101,7 @@ export default function App() {
       form.append('data', JSON.stringify(bodyData))
       if (logo) form.append('logo', logo)
 
-      const res = await fetch(PROPOSAL_API + '/generate', {
-        method: 'POST',
-        headers: { 'x-api-key': API_KEY },
-        body: form
-      })
+      const res = await fetch(PROPOSAL_API + '/generate', { method: 'POST', body: form })
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }))
@@ -131,10 +126,7 @@ export default function App() {
       const productos = [fg && 'fullglass', ln && 'lunetas', ll && 'lunetas_led'].filter(Boolean)
       fetch(NE3_API + '/propuestas', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API_KEY
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           cliente, mail, fecha_validez: fecha,
           productos,
