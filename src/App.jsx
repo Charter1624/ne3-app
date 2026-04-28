@@ -133,7 +133,9 @@ export default function App() {
           total,
           detalle: bodyData
         })
-      }).catch(() => {}) // silencioso, no bloquea la descarga
+      })
+        .then((r) => { if (!r.ok) console.error('Error guardando propuesta:', r.status, r.statusText) })
+        .catch((err) => console.error('Error guardando propuesta:', err)) // no bloquea la descarga, pero loggea
 
     } catch (e) {
       setError(e.message)
